@@ -33,18 +33,27 @@ Widget button2(height, width, textscale, text, icon, color1, color2, route) {
       decoration: BoxDecoration(
         color: color1,
         borderRadius: BorderRadius.circular(16),
+        border: (color1 == null)
+            ? Border.all(
+                width: 2,
+                color: color2,
+              )
+            : null,
       ),
       alignment: Alignment.center,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Icon(
-            icon,
-            color: color2,
-            size: textscale * 30,
-          ),
-          SizedBox(width: 10),
+          if (icon != null) ...[
+            Icon(
+              icon,
+              color: color2,
+              size: textscale * 30,
+            ),
+            SizedBox(width: 10),
+          ] else
+            SizedBox(),
           Text(
             text,
             style: GoogleFonts.montserrat(

@@ -38,6 +38,8 @@ dependencies:
   google_fonts: any
   io: ^1.0.4
   dio: any
+  flutter_barcode_scanner: ^2.0.0
+  xml: ^6.2.2
 
 dev_dependencies:
   flutter_test:

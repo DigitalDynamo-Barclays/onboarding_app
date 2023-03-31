@@ -1,7 +1,13 @@
 import 'package:barclays_onboarding/constants/buttons.dart';
+import 'package:barclays_onboarding/constants/constants.dart';
 import 'package:barclays_onboarding/screens/get_started.dart';
+import 'package:barclays_onboarding/screens/loading_page.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:xml/xml.dart';
 
 class SelectionPage extends StatefulWidget {
   final String countryName;
@@ -48,10 +54,26 @@ class _SelectionPageState extends State<SelectionPage> {
                 width,
                 textscale,
                 (widget.countryName == 'India') ? 'Scan Aadhaar' : 'Scan BRP',
-                Icons.qr_code_scanner,
+                CupertinoIcons.qrcode_viewfinder,
                 const Color.fromRGBO(0, 118, 181, 1),
                 Colors.white,
-                routeScanner(),
+                () async {
+                  String barcodeScanRes;
+                  try {
+                    barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
+                      '#00aeef',
+                      'Cancel',
+                      true,
+                      ScanMode.QR,
+                    );
+                  } on PlatformException {
+                    barcodeScanRes = 'Failed to get platform version.';
+                  }
+                  print(barcodeScanRes);
+                  if (!mounted) return;
+                  final document = XmlDocument.parse(barcodeScanRes);
+                  print(document);
+                },
               ),
             ),
             Container(
@@ -92,8 +114,8 @@ class _SelectionPageState extends State<SelectionPage> {
                 textscale,
                 'Add Manually',
                 null,
+                null,
                 const Color.fromRGBO(0, 118, 181, 1),
-                Colors.white,
                 routeScanner(),
               ),
             ),

@@ -1,4 +1,5 @@
 import 'package:barclays_onboarding/screens/get_started.dart';
+import 'package:barclays_onboarding/screens/upload_selector.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -19,7 +20,9 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
         textTheme: GoogleFonts.nunitoTextTheme(),
       ),
-      home:  getStarted(),
+      home: SelectionPage(
+        countryName: "India",
+      ),
     );
   }
 }
