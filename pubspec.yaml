@@ -48,6 +48,7 @@ dependencies:
   pdf_thumbnail: ^0.1.5+1
   mime_type: ^1.0.0
   twilio_flutter: ^0.0.9
+  loading_animation_widget: ^1.2.0+4
 
 dev_dependencies:
   flutter_test:
