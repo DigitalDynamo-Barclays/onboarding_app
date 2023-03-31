@@ -115,7 +115,7 @@ class _getStartedState extends State<getStarted> {
                   width: width * 270 / 360,
                   child: Image.asset('assets/images/namelogo.png'),
                 ),
-                const SizedBox(height: 30),
+                const SizedBox(height: 20),
                 Text(
                   'Welcome',
                   style: GoogleFonts.montserrat(
