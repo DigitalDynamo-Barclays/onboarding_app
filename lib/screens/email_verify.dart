@@ -12,17 +12,13 @@ class EmailVerifyPage extends StatefulWidget {
 }
 
 class _EmailVerifyPageState extends State<EmailVerifyPage> {
+  bool loading = false;
   @override
   Widget build(BuildContext context) {
     double textscale = MediaQuery.of(context).textScaleFactor;
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
     TextEditingController emailController = TextEditingController();
-
-    routeVerifyEmail() {
-      Navigator.push(
-          context, MaterialPageRoute(builder: (context) => OtpVerification()));
-    }
 
     return Scaffold(
       appBar: AppBar(
@@ -69,13 +65,19 @@ class _EmailVerifyPageState extends State<EmailVerifyPage> {
             ),
             SizedBox(height: 30),
             button1(
-                height,
-                width,
-                textscale,
-                'Verify Email',
-                Color.fromRGBO(0, 118, 181, 1),
-                Colors.white,
-                routeVerifyEmail())
+              height,
+              width,
+              textscale,
+              'Verify Email',
+              Color.fromRGBO(0, 118, 181, 1),
+              Colors.white,
+              () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => OtpVerification(),
+                ),
+              ),
+            ),
           ],
         ),
       ),

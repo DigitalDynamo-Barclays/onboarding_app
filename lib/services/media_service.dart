@@ -16,7 +16,7 @@ class MediaService {
             "API_ID",
           )
         },
-        baseUrl: "https://onboardingbackend.up.railway.app/onboardingd",
+        baseUrl: "https://onboardingbackend.up.railway.app/onboarding",
         followRedirects: false,
         validateStatus: (status) {
           return (status ?? 200) < 500;

@@ -20,6 +20,7 @@ class APICalls {
     required String state,
     required String zip,
     required String country,
+    required String accountType,
   }) {
     try {
       var response = _mediaService.post(
@@ -27,6 +28,7 @@ class APICalls {
         {
           "name": name,
           "dob": dob,
+          "accountType": accountType,
           "address": {
             "block": block,
             "street": street,

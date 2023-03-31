@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 const kAccountType = "accountType";
+const kUid = "uid";
+const kDetails = "details";
 
 const kPrimaryColor = Color(0xFF00aeef);
 const kSecondaryColor = Color(0xFF00395d);
