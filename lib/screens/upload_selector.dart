@@ -1,7 +1,5 @@
 import 'package:barclays_onboarding/constants/buttons.dart';
-import 'package:barclays_onboarding/constants/constants.dart';
-import 'package:barclays_onboarding/screens/get_started.dart';
-import 'package:barclays_onboarding/screens/loading_page.dart';
+import 'package:barclays_onboarding/screens/personal_input.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -116,7 +114,12 @@ class _SelectionPageState extends State<SelectionPage> {
                 null,
                 null,
                 const Color.fromRGBO(0, 118, 181, 1),
-                routeScanner(),
+                () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => PersonalInputPage(),
+                  ),
+                ),
               ),
             ),
           ],
