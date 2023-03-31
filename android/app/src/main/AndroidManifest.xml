@@ -1,6 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.barclays_onboarding">
-   <application
+    <uses-permission android:name="android.permission.INTERNET" />
+    <application
         android:label="barclays_onboarding"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
