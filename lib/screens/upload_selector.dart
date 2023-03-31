@@ -1,4 +1,5 @@
 import 'package:barclays_onboarding/constants/buttons.dart';
+import 'package:barclays_onboarding/models/aadhaar_data.dart';
 import 'package:barclays_onboarding/screens/personal_input.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -69,8 +70,33 @@ class _SelectionPageState extends State<SelectionPage> {
                   }
                   print(barcodeScanRes);
                   if (!mounted) return;
-                  final document = XmlDocument.parse(barcodeScanRes);
-                  print(document);
+                  final data = XmlDocument.parse(barcodeScanRes);
+                  var document = data.getElement("PrintLetterBarcodeData")!;
+                  var uid = document.getAttribute("uid");
+                  print("uid");
+                  print(uid);
+                  if (RegExp(r"^\d{4}\d{4}\d{4}$").hasMatch(uid.toString())) {
+                    AadhaarData data = AadhaarData(
+                      uid: uid.toString(),
+                      name: document.getAttribute("name").toString(),
+                      gender: document.getAttribute("gender").toString(),
+                      house: document.getAttribute("house").toString(),
+                      state: document.getAttribute("state").toString(),
+                      street: document.getAttribute("street").toString(),
+                      city: document.getAttribute("vtc").toString(),
+                      area: document.getAttribute("po").toString(),
+                      zip: document.getAttribute("pc").toString(),
+                      dob: document.getAttribute("dob").toString(),
+                    );
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (builder) => PersonalInputPage(
+                          aadhaarData: data,
+                        ),
+                      ),
+                    );
+                  } else {}
                 },
               ),
             ),

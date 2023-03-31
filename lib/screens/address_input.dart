@@ -1,3 +1,4 @@
+import 'package:barclays_onboarding/models/aadhaar_data.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
@@ -17,7 +18,8 @@ class Country {
 }
 
 class AddressInputPage extends StatefulWidget {
-  const AddressInputPage({super.key});
+  final AadhaarData? aadhaarData;
+  const AddressInputPage({super.key, this.aadhaarData});
 
   @override
   State<AddressInputPage> createState() => _AddressInputPageState();

@@ -1,7 +1,9 @@
+import 'package:barclays_onboarding/models/aadhaar_data.dart';
 import 'package:barclays_onboarding/screens/address_input.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import '../constants.dart';
 
 class AccountType {
@@ -11,14 +13,18 @@ class AccountType {
 }
 
 class PersonalInputPage extends StatefulWidget {
-  const PersonalInputPage({super.key});
+  final AadhaarData? aadhaarData;
+  const PersonalInputPage({super.key, this.aadhaarData});
 
   @override
   State<PersonalInputPage> createState() => _PersonalInputPageState();
 }
 
 class _PersonalInputPageState extends State<PersonalInputPage> {
+  final _myBox = Hive.box("hoursBox");
   DateTime? _selectedDate;
+  TextEditingController name = TextEditingController();
+  TextEditingController dob = TextEditingController();
 
   List<AccountType> _accType = [
     AccountType('Select Account'),
@@ -28,13 +34,23 @@ class _PersonalInputPageState extends State<PersonalInputPage> {
   ];
 
   late AccountType _selectedAccount = _accType[0];
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    if (widget.aadhaarData != null) {
+      name.text = widget.aadhaarData!.name;
+      dob.text = widget.aadhaarData!.dob;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     double textscale = MediaQuery.of(context).textScaleFactor;
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
 
-    TextEditingController nameController = TextEditingController();
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -72,7 +88,7 @@ class _PersonalInputPageState extends State<PersonalInputPage> {
                       color: Color.fromRGBO(0, 118, 181, 1), width: 3),
                   borderRadius: BorderRadius.circular(16)),
               child: TextFormField(
-                  controller: nameController,
+                  controller: name,
                   keyboardType: TextInputType.name,
                   decoration: kInputDecoration.copyWith(hintText: "Your Name")),
             ),
@@ -94,6 +110,7 @@ class _PersonalInputPageState extends State<PersonalInputPage> {
                       color: Color.fromRGBO(0, 118, 181, 1), width: 3),
                   borderRadius: BorderRadius.circular(16)),
               child: TextFormField(
+                controller: dob,
                 readOnly: true,
                 keyboardType: TextInputType.name,
                 decoration: kInputDecoration.copyWith(
@@ -142,11 +159,13 @@ class _PersonalInputPageState extends State<PersonalInputPage> {
                 ),
                 child: DropdownButton<AccountType>(
                   underline: null,
+                  isExpanded: true,
                   isDense: true,
                   dropdownColor: Colors.white,
                   hint: const Text('Select Account'),
                   value: _selectedAccount,
                   onChanged: (AccountType? newValue) {
+                    _myBox.put(kAccountType, newValue);
                     setState(() {
                       _selectedAccount = newValue!;
                     });
