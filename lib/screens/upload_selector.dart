@@ -1,5 +1,6 @@
 import 'package:barclays_onboarding/constants/buttons.dart';
 import 'package:barclays_onboarding/screens/get_started.dart';
+import 'package:barclays_onboarding/screens/personal_input.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -21,6 +22,12 @@ class _SelectionPageState extends State<SelectionPage> {
     routeScanner() {
       /*Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> ));*/
     }
+
+    routeManually() {
+      Navigator.pushReplacement(context,
+          MaterialPageRoute(builder: (context) => PersonalInputPage()));
+    }
+
     return Scaffold(
       body: Container(
         margin: const EdgeInsets.all(10),
@@ -94,7 +101,7 @@ class _SelectionPageState extends State<SelectionPage> {
                 null,
                 const Color.fromRGBO(0, 118, 181, 1),
                 Colors.white,
-                routeScanner(),
+                routeManually(),
               ),
             ),
           ],

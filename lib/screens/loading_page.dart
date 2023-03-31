@@ -1,4 +1,4 @@
-import 'package:barclays_onboarding/constants/constants.dart';
+import 'package:barclays_onboarding/constants.dart';
 import 'package:flutter/material.dart';
 
 class LoadingPage extends StatefulWidget {
