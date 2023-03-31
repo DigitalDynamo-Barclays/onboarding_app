@@ -1,6 +1,6 @@
+import 'package:barclays_onboarding/screens/email_verify.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import '../constants.dart';
 
 class AccountType {
@@ -333,7 +333,12 @@ class _AddressInputPageState extends State<AddressInputPage> {
                     ),
                   ),
                   onPressed: () {
-                    print("YHESLH");
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (builder) => EmailVerifyPage(),
+                      ),
+                    );
                   },
                   child: Icon(
                     Icons.arrow_forward,
