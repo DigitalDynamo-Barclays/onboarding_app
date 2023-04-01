@@ -11,7 +11,8 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+  var response;
+  HomePage({Key? key, required this.response}) : super(key: key);
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -27,6 +28,7 @@ class _HomePageState extends State<HomePage> {
   bool flip = false;
   @override
   Widget build(BuildContext context) {
+    widget.response = widget.response as Map;
     var size = MediaQuery.of(context).size;
     var height = size.height;
     var width = size.width;
@@ -107,9 +109,9 @@ class _HomePageState extends State<HomePage> {
                   setState(() {});
                 },
                 child: CustomCreditCard(
-                    cardNumber: "5450 7879 4864 7854",
+                    cardNumber: widget.response["accountNo"] ?? "",
                     cardExpiry: "10/25",
-                    cardHolderName: "Card Holder",
+                    cardHolderName: widget.response["name"] ?? "",
                     cvv: "456",
                     bankName: Image.asset(
                       "assets/images/namelogo.png",

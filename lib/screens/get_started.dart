@@ -3,6 +3,7 @@
 import 'package:barclays_onboarding/constants.dart';
 import 'package:barclays_onboarding/constants/buttons.dart';
 import 'package:barclays_onboarding/screens/upload_selector.dart';
+import 'package:barclays_onboarding/widgets/show_snack_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -180,7 +181,10 @@ class _getStartedState extends State<getStarted> {
                       },
                     ),
                     TextButton(
-                      onPressed: null,
+                      onPressed: () {
+                        showSnackBar(
+                            context, "This service is under development");
+                      },
                       child: Text(
                         'Import existing account',
                         style: GoogleFonts.montserrat(

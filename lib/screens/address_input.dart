@@ -74,10 +74,10 @@ class _AddressInputPageState extends State<AddressInputPage> {
       houseController.text = widget.aadhaarData!.house.toString();
       areaController.text = widget.aadhaarData!.street.toString() +
           " " +
-          widget.aadhaarData!.area.toString();
+          (widget.aadhaarData!.area ?? "");
       cityController.text = widget.aadhaarData!.city.toString();
       postController.text = widget.aadhaarData!.zip.toString();
-      stateController.text = widget.aadhaarData!.state.toString();
+      stateController.text = widget.aadhaarData!.state ?? "";
     }
   }
 

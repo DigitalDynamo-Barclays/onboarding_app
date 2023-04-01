@@ -43,8 +43,10 @@ class _PersonalInputPageState extends State<PersonalInputPage> {
     super.initState();
     if (widget.aadhaarData != null) {
       name.text = widget.aadhaarData!.name.toString();
-      dob.text = DateFormat('yyyy/MM/dd').format(
-          DateFormat('dd/MM/yyyy').parse(widget.aadhaarData!.dob.toString()));
+      if (widget.aadhaarData!.dob != null) {
+        dob.text = DateFormat('yyyy/MM/dd').format(
+            DateFormat('dd/MM/yyyy').parse(widget.aadhaarData!.dob.toString()));
+      }
     }
   }
 

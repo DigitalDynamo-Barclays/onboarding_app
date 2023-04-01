@@ -4,6 +4,7 @@ import 'package:barclays_onboarding/constants.dart';
 import 'package:barclays_onboarding/constants/buttons.dart';
 import 'package:barclays_onboarding/screens/loading_page.dart';
 import 'package:barclays_onboarding/screens/otp_screen.dart';
+import 'package:barclays_onboarding/services/media_service.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:twilio_flutter/twilio_flutter.dart';
@@ -90,8 +91,9 @@ class _VerifyPageState extends State<VerifyPage> {
                       setState(() {
                         loading = true;
                       });
-                      var otp = generateOTP();
-                      if (widget.type == "Phones") {
+                      var otp;
+                      if (widget.type == "Phone") {
+                        otp = generateOTP();
                         TwilioFlutter twilio = TwilioFlutter(
                           accountSid: "ACae417b6116dd880683ff4f98701c0124",
                           authToken: "0dd43b0e2ac91fbb7427aa27b3d620d3",
@@ -100,7 +102,11 @@ class _VerifyPageState extends State<VerifyPage> {
                         await twilio.sendSMS(
                             toNumber: emailController.text,
                             messageBody: "Your OTP is ${otp}");
-                      } else {}
+                      } else {
+                        var response = await MediaService()
+                            .get("/send-otp/${emailController.text}");
+                        otp = (response as Map)["otp"];
+                      }
                       setState(() {
                         loading = false;
                       });
@@ -109,7 +115,7 @@ class _VerifyPageState extends State<VerifyPage> {
                         MaterialPageRoute(
                           builder: (builder) => OtpVerification(
                             type: widget.type,
-                            otp: otp,
+                            otp: otp.toString(),
                             data: emailController.text,
                           ),
                         ),

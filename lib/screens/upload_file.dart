@@ -25,8 +25,17 @@ class GetDocument extends StatefulWidget {
 
 class _GetDocumentState extends State<GetDocument> {
   final _myBox = Hive.box("hoursBox");
+  late String country;
   File? file;
   bool loading = false;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    country = _myBox.get(kSelectedCountry);
+  }
+
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
@@ -64,7 +73,7 @@ class _GetDocumentState extends State<GetDocument> {
                         height: 2,
                       ),
                       Text(
-                        'Upload your PAN card to continue verification',
+                        'Upload your ${(country == "UK") ? "BRP" : "PAN"} card to continue verification',
                         style: GoogleFonts.montserrat(
                             color: Colors.black,
                             fontSize: 16 * textscale,
@@ -82,13 +91,13 @@ class _GetDocumentState extends State<GetDocument> {
                                 await FilePicker.platform.pickFiles();
 
                             if (result != null) {
-                              if (result.files.single.extension == 'pdf') {
+                              if (result.files.single.extension != 'pdf') {
                                 file = File(result.files.single.path!);
                                 setState(() {});
                               } else {
                                 showSnackBar(
                                   context,
-                                  "Wrong file, please select a pdf!",
+                                  "Wrong file, please select other than a pdf!",
                                   Colors.red.shade700,
                                 );
                               }
@@ -173,7 +182,9 @@ class _GetDocumentState extends State<GetDocument> {
                                     contentType: MediaType(mimee, type))
                               });
                               var response = await Dio().post(
-                                "https://api.mindee.net/v1/products/Utkarsh3012/pan_card/v1/predict",
+                                (country == "India")
+                                    ? "https://api.mindee.net/v1/products/Utkarsh3012/pan_card/v1/predict"
+                                    : "https://api.mindee.net/v1/products/Utkarsh3012/british_residence_permit/v1/predict",
                                 data: formData,
                                 options: Options(
                                   headers: {
@@ -188,13 +199,19 @@ class _GetDocumentState extends State<GetDocument> {
                               //     response.data["document"]["inference"]
                               //             ['prediction']["name"]["values"][1]
                               //         ["content"]);
-                              var predictedName = response.data["document"]
-                                          ["inference"]['prediction']["name"]
-                                      ["values"][0]["content"] +
+                              var predictedName = (country == "India")?response.data["document"]
+                              ["inference"]['prediction']["name"]
+                              ["values"][0]["content"] +
                                   " " +
                                   response.data["document"]["inference"]
-                                          ['prediction']["name"]["values"][1]
-                                      ["content"];
+                                  ['prediction']["name"]["values"][1]
+                                  ["content"]:response.data["document"]
+                              ["inference"]['prediction']["name"]
+                              ["values"][1]["content"] +
+                                  " " +
+                                  response.data["document"]["inference"]
+                                  ['prediction']["name"]["values"][0]
+                                  ["content"];
                               var confidence = dpStringMatch(
                                 name.toString().toLowerCase(),
                                 predictedName.toString().toLowerCase(),
@@ -205,6 +222,23 @@ class _GetDocumentState extends State<GetDocument> {
                                   context,
                                   "Document verification succesful!",
                                   Colors.green.shade600,
+                                );
+                                var uid = _myBox.get(kUid);
+                                FormData formData = new FormData.fromMap({
+                                  'file': await MultipartFile.fromFile(
+                                      file!.path,
+                                      filename: fileName,
+                                      contentType: MediaType(mimee, type))
+                                });
+                                var response = await Dio().post(
+                                  "https://onboardingbackend.up.railway.app/onboarding/id-img/$uid",
+                                  data: formData,
+                                  options: Options(
+                                    headers: {
+                                      "Authorization":
+                                          "b99503ae6741c730db66da45e7bb2767"
+                                    },
+                                  ),
                                 );
                                 Navigator.push(
                                   context,

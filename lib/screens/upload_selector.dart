@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:barclays_onboarding/constants/buttons.dart';
 import 'package:barclays_onboarding/models/aadhaar_data.dart';
+import 'package:barclays_onboarding/screens/loading_page.dart';
 import 'package:barclays_onboarding/screens/personal_input.dart';
 import 'package:barclays_onboarding/widgets/show_snack_bar.dart';
 import 'package:dio/dio.dart';
@@ -24,6 +25,7 @@ class SelectionPage extends StatefulWidget {
 }
 
 class _SelectionPageState extends State<SelectionPage> {
+  bool loading = false;
   @override
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
@@ -35,230 +37,379 @@ class _SelectionPageState extends State<SelectionPage> {
     }
     return Scaffold(
       backgroundColor: Color(0xff0076b5),
-      body: Stack(
-        children: [
-          Align(
-              alignment: Alignment.bottomCenter,
-              child: Image.asset("assets/images/signup_image.png")),
-          Container(
-            margin: const EdgeInsets.all(10),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
+      body: (loading)
+          ? LoadingPage()
+          : Stack(
               children: [
-                SizedBox(
-                  height: height * 100 / 892,
-                ),
                 Align(
-                  alignment: Alignment.topCenter,
-                  child: Text(
-                    "Let's Sign You Up!",
-                    style: GoogleFonts.montserrat(
-                      color: const Color(0xffFCFCFE),
-                      fontWeight: FontWeight.w500,
-                      fontSize: 28 * textscale,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-                Spacer(),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
-                  child: (widget.countryName == "India")
-                      ? button2(
+                    alignment: Alignment.bottomCenter,
+                    child: Image.asset("assets/images/signup_image.png")),
+                Container(
+                  margin: const EdgeInsets.all(10),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      SizedBox(
+                        height: height * 100 / 892,
+                      ),
+                      Align(
+                        alignment: Alignment.topCenter,
+                        child: Text(
+                          "Let's Sign You Up!",
+                          style: GoogleFonts.montserrat(
+                            color: const Color(0xffFCFCFE),
+                            fontWeight: FontWeight.w500,
+                            fontSize: 28 * textscale,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                      Spacer(),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+                        child: (widget.countryName == "India")
+                            ? button2(
+                                height,
+                                width,
+                                textscale,
+                                'Scan Aadhaar',
+                                CupertinoIcons.qrcode_viewfinder,
+                                const Color(0xff06b1ea),
+                                Colors.white,
+                                () async {
+                                  String barcodeScanRes;
+                                  try {
+                                    barcodeScanRes =
+                                        await FlutterBarcodeScanner.scanBarcode(
+                                      '#00aeef',
+                                      'Cancel',
+                                      true,
+                                      ScanMode.QR,
+                                    );
+                                  } on PlatformException {
+                                    barcodeScanRes =
+                                        'Failed to get platform version.';
+                                  }
+                                  print(barcodeScanRes);
+                                  if (!mounted) return;
+                                  final data =
+                                      XmlDocument.parse(barcodeScanRes);
+                                  var document = data
+                                      .getElement("PrintLetterBarcodeData")!;
+                                  var uid = document.getAttribute("uid");
+                                  print("uid");
+                                  print(uid);
+                                  if (RegExp(r"^\d{4}\d{4}\d{4}$")
+                                      .hasMatch(uid.toString())) {
+                                    AadhaarData data = AadhaarData(
+                                      uid: uid.toString(),
+                                      name: document
+                                          .getAttribute("name")
+                                          .toString(),
+                                      gender: document
+                                          .getAttribute("gender")
+                                          .toString(),
+                                      house: document
+                                          .getAttribute("house")
+                                          .toString(),
+                                      state: document
+                                          .getAttribute("state")
+                                          .toString(),
+                                      street: document
+                                          .getAttribute("street")
+                                          .toString(),
+                                      city: document
+                                          .getAttribute("vtc")
+                                          .toString(),
+                                      area: document
+                                          .getAttribute("po")
+                                          .toString(),
+                                      zip: document
+                                          .getAttribute("pc")
+                                          .toString(),
+                                      dob: document
+                                          .getAttribute("dob")
+                                          .toString(),
+                                    );
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (builder) => PersonalInputPage(
+                                          aadhaarData: data,
+                                        ),
+                                      ),
+                                    );
+                                  } else {}
+                                },
+                              )
+                            : Column(
+                                children: [
+                                  button2(
+                                    height,
+                                    width,
+                                    textscale,
+                                    'Upload Electricity Bill',
+                                    null,
+                                    const Color(0xff06b1ea),
+                                    Colors.white,
+                                    () async {
+                                      setState(() {
+                                        loading = true;
+                                      });
+                                      File? file;
+                                      FilePickerResult? result =
+                                          await FilePicker.platform.pickFiles();
+
+                                      if (result != null) {
+                                        if (result.files.single.extension ==
+                                            'pdf') {
+                                          file =
+                                              File(result.files.single.path!);
+                                          String fileName = file!.path
+                                              .toString()
+                                              .split('/')[file!.path
+                                                  .toString()
+                                                  .split('/')
+                                                  .length -
+                                              1];
+                                          String mimeType = mime(fileName)!;
+                                          print(mimeType);
+                                          String mimee = mimeType.split('/')[0];
+                                          String type = mimeType.split('/')[1];
+                                          FormData formData =
+                                              new FormData.fromMap({
+                                            'document':
+                                                await MultipartFile.fromFile(
+                                                    file!.path,
+                                                    filename: fileName,
+                                                    contentType:
+                                                        MediaType(mimee, type))
+                                          });
+                                          var response = await Dio().post(
+                                            "https://api.mindee.net/v1/products/mindee/proof_of_address/v1/predict",
+                                            data: formData,
+                                            options: Options(
+                                              headers: {
+                                                "Authorization":
+                                                    "b99503ae6741c730db66da45e7bb2767"
+                                              },
+                                            ),
+                                          );
+                                          var address = response
+                                              .data["document"]["inference"]
+                                                  ["prediction"]
+                                                  ["recipient_address"]["value"]
+                                              .toString()
+                                              .split(" ");
+                                          var len = address.length;
+                                          AadhaarData aadhaar = AadhaarData(
+                                              name: response.data["document"]
+                                                          ["inference"]
+                                                      ["prediction"]
+                                                  ["recipient_name"]["value"],
+                                              zip: address[len - 2] +
+                                                  " " +
+                                                  address[len - 1],
+                                              city: address[len - 4] +
+                                                  " " +
+                                                  address[len - 3],
+                                              house:
+                                                  address[0] + " " + address[1],
+                                              street: address[2] +
+                                                  " " +
+                                                  address[3]);
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (builder) =>
+                                                  PersonalInputPage(
+                                                aadhaarData: aadhaar,
+                                              ),
+                                            ),
+                                          );
+                                        } else {
+                                          showSnackBar(
+                                            context,
+                                            "Wrong file, please select a pdf!",
+                                            Colors.red.shade700,
+                                          );
+                                        }
+                                      } else {
+                                        showSnackBar(
+                                          context,
+                                          "Unable to get file, user cancelled!",
+                                          Colors.red.shade700,
+                                        );
+                                      }
+                                      setState(() {
+                                        loading = false;
+                                      });
+                                    },
+                                  ),
+                                  SizedBox(
+                                    height: 16,
+                                  ),
+                                  button2(
+                                    height,
+                                    width,
+                                    textscale,
+                                    'Upload Driving License',
+                                    null,
+                                    const Color(0xff06b1ea),
+                                    Colors.white,
+                                    () async {
+                                      setState(() {
+                                        loading = true;
+                                      });
+                                      File? file;
+                                      FilePickerResult? result =
+                                          await FilePicker.platform.pickFiles();
+
+                                      if (result != null) {
+                                        if (result.files.single.extension !=
+                                                'pdf' ||
+                                            result.files.single.extension ==
+                                                'pdf') {
+                                          file =
+                                              File(result.files.single.path!);
+                                          String fileName = file!.path
+                                              .toString()
+                                              .split('/')[file!.path
+                                                  .toString()
+                                                  .split('/')
+                                                  .length -
+                                              1];
+                                          String mimeType = mime(fileName)!;
+                                          print(mimeType);
+                                          String mimee = mimeType.split('/')[0];
+                                          String type = mimeType.split('/')[1];
+                                          FormData formData =
+                                              new FormData.fromMap({
+                                            'document':
+                                                await MultipartFile.fromFile(
+                                                    file!.path,
+                                                    filename: fileName,
+                                                    contentType:
+                                                        MediaType(mimee, type))
+                                          });
+                                          var response = await Dio().post(
+                                            "https://api.mindee.net/v1/products/Utkarsh3012/uk_license/v1/predict",
+                                            data: formData,
+                                            options: Options(
+                                              headers: {
+                                                "Authorization":
+                                                    "b99503ae6741c730db66da45e7bb2767"
+                                              },
+                                            ),
+                                          );
+                                          var address = response
+                                                      .data["document"]
+                                                  ["inference"]["prediction"]
+                                              ["address"]["values"];
+                                          var len = address.length;
+                                          AadhaarData aadhaar = AadhaarData(
+                                              name: response.data["document"]
+                                                          ["inference"]["prediction"]
+                                                      ["name"]["values"][2]["content"] +
+                                                  " " +
+                                                  response.data["document"]
+                                                              ["inference"]
+                                                          ["prediction"]["name"]
+                                                      ["values"][1]["content"],
+                                              zip: address[len - 1]["content"],
+                                              city: address[3]["content"],
+                                              house: address[len - 2]
+                                                  ["content"],
+                                              street: address[0]["content"] +
+                                                  address[1]["content"]);
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (builder) =>
+                                                  PersonalInputPage(
+                                                aadhaarData: aadhaar,
+                                              ),
+                                            ),
+                                          );
+                                        } else {
+                                          showSnackBar(
+                                            context,
+                                            "Wrong file, please select a pdf!",
+                                            Colors.red.shade700,
+                                          );
+                                        }
+                                      } else {
+                                        showSnackBar(
+                                          context,
+                                          "Unable to get file, user cancelled!",
+                                          Colors.red.shade700,
+                                        );
+                                      }
+                                      setState(() {
+                                        loading = false;
+                                      });
+                                    },
+                                  ),
+                                ],
+                              ),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.fromLTRB(0, 15, 0, 15),
+                        child: Row(children: <Widget>[
+                          const Expanded(
+                            child: Divider(
+                              indent: 30,
+                              thickness: 2,
+                              color: Colors.black,
+                              endIndent: 15,
+                            ),
+                          ),
+                          Text(
+                            "OR",
+                            style: GoogleFonts.montserrat(
+                              color: Colors.white70,
+                              fontWeight: FontWeight.w500,
+                              fontSize: 12 * textscale,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                          const Expanded(
+                            child: Divider(
+                              indent: 15,
+                              thickness: 2,
+                              color: Colors.black,
+                              endIndent: 30,
+                            ),
+                          ),
+                        ]),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+                        child: button2(
                           height,
                           width,
                           textscale,
-                          'Scan Aadhaar',
-                          CupertinoIcons.qrcode_viewfinder,
-                          const Color(0xff06b1ea),
+                          'Add Manually',
+                          null,
+                          null,
                           Colors.white,
-                          () async {
-                            String barcodeScanRes;
-                            try {
-                              barcodeScanRes =
-                                  await FlutterBarcodeScanner.scanBarcode(
-                                '#00aeef',
-                                'Cancel',
-                                true,
-                                ScanMode.QR,
-                              );
-                            } on PlatformException {
-                              barcodeScanRes =
-                                  'Failed to get platform version.';
-                            }
-                            print(barcodeScanRes);
-                            if (!mounted) return;
-                            final data = XmlDocument.parse(barcodeScanRes);
-                            var document =
-                                data.getElement("PrintLetterBarcodeData")!;
-                            var uid = document.getAttribute("uid");
-                            print("uid");
-                            print(uid);
-                            if (RegExp(r"^\d{4}\d{4}\d{4}$")
-                                .hasMatch(uid.toString())) {
-                              AadhaarData data = AadhaarData(
-                                uid: uid.toString(),
-                                name: document.getAttribute("name").toString(),
-                                gender:
-                                    document.getAttribute("gender").toString(),
-                                house:
-                                    document.getAttribute("house").toString(),
-                                state:
-                                    document.getAttribute("state").toString(),
-                                street:
-                                    document.getAttribute("street").toString(),
-                                city: document.getAttribute("vtc").toString(),
-                                area: document.getAttribute("po").toString(),
-                                zip: document.getAttribute("pc").toString(),
-                                dob: document.getAttribute("dob").toString(),
-                              );
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (builder) => PersonalInputPage(
-                                    aadhaarData: data,
-                                  ),
-                                ),
-                              );
-                            } else {}
-                          },
-                        )
-                      : Column(
-                          children: [
-                            button2(
-                              height,
-                              width,
-                              textscale,
-                              'Upload Electricity Bill',
-                              null,
-                              const Color(0xff06b1ea),
-                              Colors.white,
-                              () async {
-                                File? file;
-                                FilePickerResult? result =
-                                    await FilePicker.platform.pickFiles();
-
-                                if (result != null) {
-                                  if (result.files.single.extension == 'pdf') {
-                                    file = File(result.files.single.path!);
-                                    String fileName = file!.path
-                                        .toString()
-                                        .split('/')[file!.path
-                                            .toString()
-                                            .split('/')
-                                            .length -
-                                        1];
-                                    String mimeType = mime(fileName)!;
-                                    print(mimeType);
-                                    String mimee = mimeType.split('/')[0];
-                                    String type = mimeType.split('/')[1];
-                                    FormData formData = new FormData.fromMap({
-                                      'document': await MultipartFile.fromFile(
-                                          file!.path,
-                                          filename: fileName,
-                                          contentType: MediaType(mimee, type))
-                                    });
-                                    var response = await Dio().post(
-                                      "https://api.mindee.net/v1/products/mindee/proof_of_address/v1/predict",
-                                      data: formData,
-                                      options: Options(
-                                        headers: {
-                                          "Authorization":
-                                              "b99503ae6741c730db66da45e7bb2767"
-                                        },
-                                      ),
-                                    );
-                                    print(response.data["document"]["inference"]
-                                        ["prediction"]);
-                                  } else {
-                                    showSnackBar(
-                                      context,
-                                      "Wrong file, please select a pdf!",
-                                      Colors.red.shade700,
-                                    );
-                                  }
-                                } else {
-                                  showSnackBar(
-                                    context,
-                                    "Unable to get file, user cancelled!",
-                                    Colors.red.shade700,
-                                  );
-                                }
-                              },
+                          () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => PersonalInputPage(),
                             ),
-                            SizedBox(
-                              height: 16,
-                            ),
-                            button2(
-                              height,
-                              width,
-                              textscale,
-                              'Upload Driving License',
-                              null,
-                              const Color(0xff06b1ea),
-                              Colors.white,
-                              () {},
-                            ),
-                          ],
+                          ),
                         ),
-                ),
-                Container(
-                  padding: const EdgeInsets.fromLTRB(0, 15, 0, 15),
-                  child: Row(children: <Widget>[
-                    const Expanded(
-                      child: Divider(
-                        indent: 30,
-                        thickness: 2,
-                        color: Colors.black,
-                        endIndent: 15,
                       ),
-                    ),
-                    Text(
-                      "OR",
-                      style: GoogleFonts.montserrat(
-                        color: Colors.white70,
-                        fontWeight: FontWeight.w500,
-                        fontSize: 12 * textscale,
+                      SizedBox(
+                        height: height * 40 / 892,
                       ),
-                      textAlign: TextAlign.center,
-                    ),
-                    const Expanded(
-                      child: Divider(
-                        indent: 15,
-                        thickness: 2,
-                        color: Colors.black,
-                        endIndent: 30,
-                      ),
-                    ),
-                  ]),
-                ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
-                  child: button2(
-                    height,
-                    width,
-                    textscale,
-                    'Add Manually',
-                    null,
-                    null,
-                    Colors.white,
-                    () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => PersonalInputPage(),
-                      ),
-                    ),
+                    ],
                   ),
-                ),
-                SizedBox(
-                  height: height * 40 / 892,
                 ),
               ],
             ),
-          ),
-        ],
-      ),
     );
   }
 }

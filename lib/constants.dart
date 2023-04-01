@@ -7,6 +7,7 @@ const kDetails = "details";
 const kPhone = "phoneNumber";
 const kEmail = "email";
 const kSelectedCountry = "selectedCountry";
+const kStatus = "status";
 
 const kPrimaryColor = Color(0xFF00aeef);
 const kSecondaryColor = Color(0xFF00395d);

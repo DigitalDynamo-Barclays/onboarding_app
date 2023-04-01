@@ -1,5 +1,9 @@
+import 'package:barclays_onboarding/constants.dart';
+import 'package:barclays_onboarding/screens/homepage.dart';
+import 'package:barclays_onboarding/services/media_service.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hive_flutter/adapters.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class UnderProcessPage extends StatefulWidget {
@@ -10,6 +14,40 @@ class UnderProcessPage extends StatefulWidget {
 }
 
 class _UnderProcessPageState extends State<UnderProcessPage> {
+  var _myBox = Hive.box("hoursBox");
+  var response;
+  callApi() async {
+    var uid = await _myBox.get(kUid);
+    while (true) {
+      print("ds");
+      await Future.delayed(Duration(seconds: 5));
+      try {
+        response = await MediaService().get('/user/${uid}');
+      } catch (e) {
+        print(e);
+      }
+      print((response)[0]);
+      if (response.runtimeType == List && (response)[0]["idVerified"] == true) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (builder) => HomePage(
+              response: response[0],
+            ),
+          ),
+        );
+        break;
+      }
+    }
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    callApi();
+  }
+
   @override
   Widget build(BuildContext context) {
     double textscale = MediaQuery.of(context).textScaleFactor;
@@ -51,7 +89,7 @@ class _UnderProcessPageState extends State<UnderProcessPage> {
             Spacer(),
             LoadingAnimationWidget.staggeredDotsWave(
                 color: Colors.white, size: 35),
-            SizedBox(height: height * 55 / 640),
+            SizedBox(height: height * 150 / 640),
           ],
         ),
       ),

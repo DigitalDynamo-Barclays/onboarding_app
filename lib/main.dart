@@ -1,5 +1,7 @@
+import 'package:barclays_onboarding/constants.dart';
 import 'package:barclays_onboarding/screens/get_started.dart';
 import 'package:barclays_onboarding/screens/homepage.dart';
+import 'package:barclays_onboarding/screens/under_process.dart';
 import 'package:barclays_onboarding/screens/upload_file.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -17,6 +19,8 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    var _myBox = Hive.box("hoursBox");
+    var status = _myBox.get(kStatus);
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: "Barclay's On-boarding",
@@ -24,7 +28,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
         textTheme: GoogleFonts.nunitoTextTheme(),
       ),
-      home: getStarted(),
+      home: (status == "underVerification") ? UnderProcessPage() : getStarted(),
     );
   }
 }

@@ -1,6 +1,7 @@
 import 'package:barclays_onboarding/constants.dart';
 import 'package:barclays_onboarding/screens/email_verify.dart';
 import 'package:barclays_onboarding/screens/under_process.dart';
+import 'package:barclays_onboarding/services/media_service.dart';
 import 'package:barclays_onboarding/widgets/show_snack_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_otp_text_field/flutter_otp_text_field.dart';
@@ -64,7 +65,10 @@ class _OtpVerificationState extends State<OtpVerification> {
             },
             //runs when every textfield is filled
             onSubmit: (String verificationCode) async {
-              if (verificationCode == widget.otp && widget.type == "Phone") {
+              print("sdlfajasldkf");
+              print(verificationCode + widget.otp);
+              if (verificationCode == widget.otp.toString() &&
+                  widget.type == "Phone") {
                 showSnackBar(
                   context,
                   "OTP verified successfully! Phone number saved.",
@@ -85,6 +89,11 @@ class _OtpVerificationState extends State<OtpVerification> {
                   Colors.green.shade600,
                 );
                 await _myBox.put(kEmail, widget.data);
+                var mobile = await _myBox.get(kPhone);
+                var uid = await _myBox.get(kUid);
+                var response = await MediaService().post('/contact-info/${uid}',
+                    {"phone": "$mobile", "email": "${widget.data}"});
+                _myBox.put(kStatus, "underVerification");
                 Navigator.push(
                   context,
                   MaterialPageRoute(
