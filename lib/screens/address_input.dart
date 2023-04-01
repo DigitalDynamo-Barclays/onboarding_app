@@ -54,11 +54,22 @@ class _AddressInputPageState extends State<AddressInputPage> {
   TextEditingController cityController = TextEditingController();
   TextEditingController stateController = TextEditingController();
   TextEditingController postController = TextEditingController();
+  setCountry() async {
+    var country = await _myBox.get(kSelectedCountry);
+    if (country.toString().toLowerCase() == 'india') {
+      _selectedCountry = _countries[0];
+    } else {
+      _selectedCountry = _countries[1];
+    }
+
+    setState(() {});
+  }
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    setCountry();
     if (widget.aadhaarData != null) {
       houseController.text = widget.aadhaarData!.house.toString();
       areaController.text = widget.aadhaarData!.street.toString() +

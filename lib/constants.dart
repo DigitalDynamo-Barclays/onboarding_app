@@ -4,6 +4,9 @@ import 'package:google_fonts/google_fonts.dart';
 const kAccountType = "accountType";
 const kUid = "uid";
 const kDetails = "details";
+const kPhone = "phoneNumber";
+const kEmail = "email";
+const kSelectedCountry = "selectedCountry";
 
 const kPrimaryColor = Color(0xFF00aeef);
 const kSecondaryColor = Color(0xFF00395d);

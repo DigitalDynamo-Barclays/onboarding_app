@@ -49,6 +49,9 @@ dependencies:
   mime_type: ^1.0.0
   twilio_flutter: ^0.0.9
   loading_animation_widget: ^1.2.0+4
+  flutter_otp_text_field: ^1.1.1
+  awesome_card: ^1.1.7
+  animated_bottom_navigation_bar: ^1.2.0
 
 dev_dependencies:
   flutter_test:

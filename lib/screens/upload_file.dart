@@ -209,7 +209,9 @@ class _GetDocumentState extends State<GetDocument> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (builder) => EmailVerifyPage(),
+                                    builder: (builder) => VerifyPage(
+                                      type: "Phone",
+                                    ),
                                   ),
                                 );
                               } else {

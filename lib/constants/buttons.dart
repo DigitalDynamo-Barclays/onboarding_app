@@ -28,7 +28,7 @@ Widget button2(height, width, textscale, text, icon, color1, color2, route) {
   return GestureDetector(
     onTap: route,
     child: Container(
-      height: height * 61 / 640,
+      height: height * 50 / 640,
       width: width * 357 / 360,
       decoration: BoxDecoration(
         color: color1,

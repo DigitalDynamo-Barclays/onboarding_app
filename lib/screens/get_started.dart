@@ -1,9 +1,11 @@
 // ignore_for_file: camel_case_types
 
+import 'package:barclays_onboarding/constants.dart';
 import 'package:barclays_onboarding/constants/buttons.dart';
 import 'package:barclays_onboarding/screens/upload_selector.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 class Country {
   final String name;
@@ -20,6 +22,7 @@ class getStarted extends StatefulWidget {
 }
 
 class _getStartedState extends State<getStarted> {
+  final _myBox = Hive.box("hoursBox");
   List<Country> _countries = [
     Country('India', '🇮🇳'),
     Country('UK', '🇬🇧'),
@@ -166,7 +169,8 @@ class _getStartedState extends State<getStarted> {
                       Colors.white,
                       Colors.blue,
                       () {
-                        Navigator.pushReplacement(
+                        _myBox.put(kSelectedCountry, _selectedCountry.name);
+                        Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (context) => SelectionPage(
